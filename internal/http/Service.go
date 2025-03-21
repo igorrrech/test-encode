@@ -9,28 +9,43 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
-	"github.com/labstack/gommon/log"
+	"github.com/sirupsen/logrus"
+
+	h "test/internal/http/handlers"
+	m "test/internal/http/middleware"
 )
 
 type Service struct {
 	host string
 	port string
+	log  *logrus.Logger
 }
 
 func NewService(
 	host string,
 	port string,
+	log *logrus.Logger,
 
 ) *Service {
 	return nil
 }
 func (s Service) Run(ctx context.Context) {
 	e := echo.New()
-	e.Logger.SetLevel(log.INFO)
+	//logrus err handler adapter
+	e.HTTPErrorHandler = m.NewLogrusErrorHandler(s.log)
+	//logrus logging middleware adapter
+	e.Use(m.NewLogrusMiddleware(s.log))
 	// e.GET("/", func(c echo.Context) error {
 	// 	time.Sleep(5 * time.Second)
 	// 	return c.JSON(http.StatusOK, "OK")
 	// })
+	g := e.Group("/person") //, m.NewDbSessionMiddleware())
+	g.GET("/", h.GetPersonList())
+	g.GET("/:id", h.GetPersonById())
+	g.POST("/", h.CreatePerson())
+	g.PUT("/:id", h.UpdatePerson())
+	g.DELETE("/:id", h.DeletePerson())
+
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 	// Start server

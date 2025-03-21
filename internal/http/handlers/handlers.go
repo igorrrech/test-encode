@@ -1,17 +1,31 @@
 package handlers
 
-func GetPersonList() {
+import (
+	"github.com/labstack/echo/v4"
+)
 
+func GetPersonList() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return nil
+	}
 }
-func GetPersonById() {
-
+func GetPersonById() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return nil
+	}
 }
-func CreatePerson() {
-
+func CreatePerson() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return nil
+	}
 }
-func UpdatePerson() {
-
+func UpdatePerson() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return nil
+	}
 }
-func DeletePerson() {
-
+func DeletePerson() echo.HandlerFunc {
+	return func(c echo.Context) error {
+		return nil
+	}
 }
