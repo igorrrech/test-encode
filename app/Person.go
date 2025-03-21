@@ -1,7 +1,7 @@
 package app
 
 type Person struct {
-	Id        int64  `json:"id" db:"id"`
+	Id        uint64 `json:"id" db:"id"`
 	Email     string `json:"email" db:"email"`
 	Phone     string `json:"phone" db:"phone"`
 	FirstName string `json:"first-name" db:"first-name"`

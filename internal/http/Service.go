@@ -2,6 +2,7 @@ package http
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"net/http"
 	"os"
@@ -9,10 +10,13 @@ import (
 	"time"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 
+	"test/app"
 	h "test/internal/http/handlers"
 	m "test/internal/http/middleware"
+	l "test/internal/logic"
 )
 
 type Service struct {
@@ -34,26 +38,41 @@ func (s Service) Run(ctx context.Context) {
 	//logrus err handler adapter
 	e.HTTPErrorHandler = m.NewLogrusErrorHandler(s.log)
 	//logrus logging middleware adapter
-	e.Use(m.NewLogrusMiddleware(s.log))
-	// e.GET("/", func(c echo.Context) error {
-	// 	time.Sleep(5 * time.Second)
-	// 	return c.JSON(http.StatusOK, "OK")
-	// })
-	g := e.Group("/person") //, m.NewDbSessionMiddleware())
-	g.GET("/", h.GetPersonList())
-	g.GET("/:id", h.GetPersonById())
-	g.POST("/", h.CreatePerson())
-	g.PUT("/:id", h.UpdatePerson())
-	g.DELETE("/:id", h.DeletePerson())
+	e.Use(m.NewLogrusMiddleware(s.log), middleware.Recover())
+
+	g := e.Group("/person", m.NewDbSessionMiddleware(m.SessionProviderMock{Session: nil}))
+	g.GET("/", h.GetPersonList(l.ExecuteReturnPersonListMock{
+		Error: nil,
+		Persons: []app.Person{
+			{Id: 1},
+			{Id: 2},
+			{Id: 3},
+		},
+	}))
+	g.GET("/:id", h.GetPersonById(l.ExecuteReturnPersonMock{
+		Error: nil,
+		Person: app.Person{
+			Id: 1,
+		},
+	}))
+	g.POST("/", h.CreatePerson(l.ExecutesPersonMock{
+		Error: nil,
+	}))
+	g.PUT("/:id", h.UpdatePerson(l.ExecutesPersonMock{
+		Error: nil,
+	}))
+	g.DELETE("/:id", h.DeletePerson(l.ExecuteMock{
+		Error: nil,
+	}))
 
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()
 	// Start server
 	hostport := net.JoinHostPort(s.host, s.port)
-	e.Logger.Info("starting server at %s ...", hostport)
+	s.log.Info(fmt.Sprintf("starting server at %s ...", hostport))
 	go func() {
 		if err := e.Start(hostport); err != nil && err != http.ErrServerClosed {
-			e.Logger.Fatal("shutting down the server")
+			s.log.Fatal("shutting down the server")
 		}
 	}()
 	// Wait for interrupt signal to gracefully shut down the server with a timeout of 10 seconds.
@@ -61,8 +80,8 @@ func (s Service) Run(ctx context.Context) {
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
 	if err := e.Shutdown(ctx); err != nil {
-		e.Logger.Fatal(err)
+		s.log.Fatal(err.Error())
 		return
 	}
-	e.Logger.Info("server is stopped")
+	s.log.Info("server is stopped")
 }

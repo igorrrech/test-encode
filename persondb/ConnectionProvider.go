@@ -25,6 +25,7 @@ func NewConnectionProvider(
 		driver: driver,
 		dsn:    dsn,
 		log:    log,
+		event:  event,
 	}
 	cp.mustCreateConnection()
 	return cp
