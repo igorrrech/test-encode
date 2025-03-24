@@ -31,7 +31,11 @@ func NewService(
 	log *logrus.Logger,
 
 ) *Service {
-	return nil
+	return &Service{
+		host: host,
+		port: port,
+		log:  log,
+	}
 }
 func (s Service) Run(ctx context.Context) {
 	e := echo.New()

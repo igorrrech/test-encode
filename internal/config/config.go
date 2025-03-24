@@ -8,9 +8,9 @@ import (
 
 type (
 	Config struct {
-		Server   `json:"Server"`
-		Log      `json:"Log"`
-		PersonDb `json:"PersonDb"`
+		Server   `json:"server"`
+		Log      `json:"log"`
+		PersonDb `json:"person-db"`
 	}
 	Server struct {
 		Host string `env-requires:"true" json:"host"`
@@ -21,7 +21,7 @@ type (
 	}
 	PersonDb struct {
 		Dsn                string `env-requires:"true" env:"DSN"`
-		MaxOpenConnections uint   `env-requires:"true" env:"MAX-OPEN-CONNECTIONS"`
+		MaxOpenConnections uint   `env-requires:"true" env:"MAX_OPEN_CONNECTIONS"`
 	}
 )
 

@@ -1,0 +1,30 @@
+services:
+  test-db:
+    container_name: test-db-pg
+    image: postgres
+    env_file:
+      - .env
+    networks:
+      - test-backend
+  test-pg-admin:
+    container_name: test-pg-admin
+    image: dpage/pgadmin4:7.2
+    networks:
+      - test-backend
+  test-app:
+    container_name: test-app
+    build: .
+    links:
+      - "test-db:database"
+    env_file:
+      - .env
+    ports:
+      - 8001:8001
+    restart: unless-stopped
+    networks:
+      - test-backend
+networks:
+  test-backend:
+    driver: bridge
+    driver_opts:
+       com.docker.network.bridge.host_bind_ipv4: "127.0.0.1"

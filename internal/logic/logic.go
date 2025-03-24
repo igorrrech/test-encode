@@ -7,12 +7,15 @@ import (
 )
 
 type UseCaseDeletePerson struct {
+	deleter PersonDeleter
 }
 
 func NewUseCaseDeletePerson(
 	p *PersonDeleter,
 ) *UseCaseDeletePerson {
-	return nil
+	return &UseCaseDeletePerson{
+		deleter: *p,
+	}
 }
 func (u UseCaseDeletePerson) Execute(session *dbr.Session, id uint64) error {
 	//ctx
@@ -21,12 +24,15 @@ func (u UseCaseDeletePerson) Execute(session *dbr.Session, id uint64) error {
 }
 
 type UseCaseCreatePerson struct {
+	creater PersonCreater
 }
 
 func NewUseCaseCreatePerson(
 	p *PersonCreater,
 ) *UseCaseCreatePerson {
-	return nil
+	return &UseCaseCreatePerson{
+		creater: *p,
+	}
 }
 func (u UseCaseCreatePerson) Execute(session *dbr.Session, person app.Person) error {
 	//validate
@@ -36,12 +42,15 @@ func (u UseCaseCreatePerson) Execute(session *dbr.Session, person app.Person) er
 }
 
 type UseCaseUpdatePerson struct {
+	updater PersonUpdater
 }
 
 func NewUseCaseUpdatePerson(
 	p *PersonUpdater,
 ) *UseCaseUpdatePerson {
-	return nil
+	return &UseCaseUpdatePerson{
+		updater: *p,
+	}
 }
 func (u UseCaseUpdatePerson) Execute(session *dbr.Session, person app.Person) error {
 	//validate
@@ -51,19 +60,40 @@ func (u UseCaseUpdatePerson) Execute(session *dbr.Session, person app.Person) er
 }
 
 type UseCaseGetPersonById struct {
+	getter PersonGetter
 }
 
 func NewUseCaseGetPersonById(
 	p *PersonGetter,
 ) *UseCaseGetPersonById {
-	return nil
+	return &UseCaseGetPersonById{
+		getter: *p,
+	}
+}
+func (u UseCaseGetPersonById) Execute(session *dbr.Session, id uint64) (app.Person, error) {
+	//ctx
+	//tx
+	return app.Person{}, nil
 }
 
 type UseCaseGetPersonsList struct {
+	listGetter PersonListGetter
 }
 
 func NewUseCaseGetPersonsList(
 	p *PersonListGetter,
 ) *UseCaseGetPersonsList {
-	return nil
+	return &UseCaseGetPersonsList{
+		listGetter: *p,
+	}
+}
+func (u UseCaseGetPersonsList) Execute(
+	session *dbr.Session,
+	limit uint64,
+	offset uint64,
+	search string,
+) ([]app.Person, error) {
+	//ctx
+	//tx
+	return nil, nil
 }

@@ -54,7 +54,7 @@ func NewLogrusErrorHandler(log *logrus.Logger) echo.HTTPErrorHandler {
 		log.WithFields(logrus.Fields{
 			"code": echoErr.Code,
 			"msg":  echoErr.Message,
-			"err":  echoErr.Internal.Error(),
+			//"err":  echoErr.Internal.Error(),
 		}).Error("Error")
 
 	}
