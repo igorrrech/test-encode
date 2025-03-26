@@ -13,31 +13,39 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 	"github.com/sirupsen/logrus"
 
-	"test/app"
 	h "test/internal/http/handlers"
 	m "test/internal/http/middleware"
-	l "test/internal/logic"
+	"test/internal/logic"
 )
 
 type Service struct {
 	host string
 	port string
 	log  *logrus.Logger
+	pr   logic.PersonRepoInterface
 }
 
 func NewService(
 	host string,
 	port string,
 	log *logrus.Logger,
+	personRepo logic.PersonRepoInterface,
 
 ) *Service {
 	return &Service{
 		host: host,
 		port: port,
 		log:  log,
+		pr:   personRepo,
 	}
 }
 func (s Service) Run(ctx context.Context) {
+	//use cases init
+	creator := logic.NewUseCaseCreatePerson(s.pr)
+	updater := logic.NewUseCaseUpdatePerson(s.pr)
+	deleter := logic.NewUseCaseDeletePerson(s.pr)
+	getter := logic.NewUseCaseGetPersonById(s.pr)
+	listGetter := logic.NewUseCaseGetPersonsList(s.pr)
 	e := echo.New()
 	//logrus err handler adapter
 	e.HTTPErrorHandler = m.NewLogrusErrorHandler(s.log)
@@ -45,29 +53,11 @@ func (s Service) Run(ctx context.Context) {
 	e.Use(m.NewLogrusMiddleware(s.log), middleware.Recover())
 
 	g := e.Group("/person", m.NewDbSessionMiddleware(m.SessionProviderMock{Session: nil}))
-	g.GET("/", h.GetPersonList(l.ExecuteReturnPersonListMock{
-		Error: nil,
-		Persons: []app.Person{
-			{Id: 1},
-			{Id: 2},
-			{Id: 3},
-		},
-	}))
-	g.GET("/:id", h.GetPersonById(l.ExecuteReturnPersonMock{
-		Error: nil,
-		Person: app.Person{
-			Id: 1,
-		},
-	}))
-	g.POST("/", h.CreatePerson(l.ExecutesPersonMock{
-		Error: nil,
-	}))
-	g.PUT("/:id", h.UpdatePerson(l.ExecutesPersonMock{
-		Error: nil,
-	}))
-	g.DELETE("/:id", h.DeletePerson(l.ExecuteMock{
-		Error: nil,
-	}))
+	g.GET("/", h.GetPersonList(listGetter))
+	g.GET("/:id", h.GetPersonById(getter))
+	g.POST("/", h.CreatePerson(creator))
+	g.PUT("/:id", h.UpdatePerson(updater))
+	g.DELETE("/:id", h.DeletePerson(deleter))
 
 	ctx, stop := signal.NotifyContext(ctx, os.Interrupt)
 	defer stop()

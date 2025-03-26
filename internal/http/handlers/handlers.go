@@ -29,7 +29,6 @@ func GetPersonList(
 		if parsed, err := strconv.ParseUint(c.QueryParam(queryParamOffset), 10, 64); err == nil {
 			offset = parsed
 		}
-		//validate search string!!!
 		searchString := c.QueryParam(queryParamSearch)
 		var (
 			session *dbr.Session
