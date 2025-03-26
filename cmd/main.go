@@ -6,13 +6,22 @@ import (
 	"test/internal/config"
 	"test/internal/http"
 	"test/internal/logic"
+	"test/persondb"
 
+	_ "github.com/lib/pq"
 	"github.com/sirupsen/logrus"
 )
 
 func main() {
 	cfg := config.MustLoadConfig("./config.json")
 	logger := logrus.New()
+
+	sp := persondb.NewConnectionProvider(
+		"postgres",
+		cfg.Dsn,
+		nil,
+		logger,
+	)
 
 	svc := http.NewService(
 		cfg.Host,
@@ -32,6 +41,7 @@ func main() {
 			GetListError: nil,
 			DeleteError:  nil,
 		},
+		sp,
 	)
 
 	ctx := context.Background()

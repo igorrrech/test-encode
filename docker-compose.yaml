@@ -34,8 +34,8 @@ services:
     restart: unless-stopped
     networks:
       - test-backend
-values:
-  - pg-data:
+volumes:
+  pg-data:
 networks:
   test-backend:
     driver: bridge

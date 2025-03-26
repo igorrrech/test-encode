@@ -32,7 +32,7 @@ func NewLogrusMiddleware(log *logrus.Logger) echo.MiddlewareFunc {
 			}
 			log.WithFields(logrus.Fields{
 				"URI":    v.URI,
-				"status": v.Status,
+				"status": c.Response().Status,
 				"time":   time.Since(timeSince),
 			}).Info("request")
 			return nil
@@ -48,7 +48,7 @@ func NewLogrusErrorHandler(log *logrus.Logger) echo.HTTPErrorHandler {
 		if !ok {
 			echoErr = &echo.HTTPError{}
 			echoErr.Code = http.StatusInternalServerError
-			echoErr.Message = ""
+			echoErr.Message = err.Error()
 			echoErr.Internal = err
 		}
 		log.WithFields(logrus.Fields{
@@ -56,6 +56,6 @@ func NewLogrusErrorHandler(log *logrus.Logger) echo.HTTPErrorHandler {
 			"msg":  echoErr.Message,
 			//"err":  echoErr.Internal.Error(),
 		}).Error("Error")
-
+		c.NoContent(echoErr.Code)
 	}
 }

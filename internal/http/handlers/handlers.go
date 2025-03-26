@@ -34,7 +34,7 @@ func GetPersonList(
 			session *dbr.Session
 			ok      bool
 		)
-		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok {
+		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok || session == nil {
 			return ErrHaveNotSession
 		}
 		persons, err := personsGetter.Execute(session, limit, offset, searchString)
@@ -69,7 +69,7 @@ func GetPersonById(
 			session *dbr.Session
 			ok      bool
 		)
-		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok {
+		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok || session == nil {
 			return ErrHaveNotSession
 		}
 		person, err := personGetter.Execute(session, id)
@@ -98,7 +98,7 @@ func CreatePerson(
 			session *dbr.Session
 			ok      bool
 		)
-		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok {
+		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok || session == nil {
 			return ErrHaveNotSession
 		}
 		var req Request
@@ -135,7 +135,7 @@ func UpdatePerson(
 			session *dbr.Session
 			ok      bool
 		)
-		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok {
+		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok || session == nil {
 			return ErrHaveNotSession
 		}
 		var req Request
@@ -168,7 +168,7 @@ func DeletePerson(
 			session *dbr.Session
 			ok      bool
 		)
-		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok {
+		if session, ok = c.Get(middleware.CSession).(*dbr.Session); !ok || session == nil {
 			return ErrHaveNotSession
 		}
 		err := deleter.Execute(session, id)

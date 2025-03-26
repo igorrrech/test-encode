@@ -23,6 +23,7 @@ type Service struct {
 	port string
 	log  *logrus.Logger
 	pr   logic.PersonRepoInterface
+	sp   m.SessionProvider
 }
 
 func NewService(
@@ -30,6 +31,7 @@ func NewService(
 	port string,
 	log *logrus.Logger,
 	personRepo logic.PersonRepoInterface,
+	sessionProvider m.SessionProvider,
 
 ) *Service {
 	return &Service{
@@ -37,6 +39,7 @@ func NewService(
 		port: port,
 		log:  log,
 		pr:   personRepo,
+		sp:   sessionProvider,
 	}
 }
 func (s Service) Run(ctx context.Context) {
@@ -45,6 +48,7 @@ func (s Service) Run(ctx context.Context) {
 	updater := logic.NewUseCaseUpdatePerson(s.pr)
 	deleter := logic.NewUseCaseDeletePerson(s.pr)
 	getter := logic.NewUseCaseGetPersonById(s.pr)
+
 	listGetter := logic.NewUseCaseGetPersonsList(s.pr)
 	e := echo.New()
 	//logrus err handler adapter
@@ -52,7 +56,7 @@ func (s Service) Run(ctx context.Context) {
 	//logrus logging middleware adapter
 	e.Use(m.NewLogrusMiddleware(s.log), middleware.Recover())
 
-	g := e.Group("/person", m.NewDbSessionMiddleware(m.SessionProviderMock{Session: nil}))
+	g := e.Group("/person", m.NewDbSessionMiddleware(s.sp))
 	g.GET("/", h.GetPersonList(listGetter))
 	g.GET("/:id", h.GetPersonById(getter))
 	g.POST("/", h.CreatePerson(creator))
