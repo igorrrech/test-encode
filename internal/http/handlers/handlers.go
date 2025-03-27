@@ -41,7 +41,7 @@ func GetPersonList(
 		if err != nil {
 			return &echo.HTTPError{
 				Code:     http.StatusInternalServerError,
-				Message:  "cant execute",
+				Message:  err.Error(),
 				Internal: err,
 			}
 		}
@@ -76,7 +76,7 @@ func GetPersonById(
 		if err != nil {
 			return &echo.HTTPError{
 				Code:     http.StatusInternalServerError,
-				Message:  "cant execute",
+				Message:  err.Error(),
 				Internal: err,
 			}
 		}
@@ -90,7 +90,7 @@ func CreatePerson(
 ) echo.HandlerFunc {
 	type (
 		Request struct {
-			Person app.Person `json:"persons"`
+			Person app.Person `json:"person"`
 		}
 	)
 	return func(c echo.Context) error {
@@ -102,14 +102,14 @@ func CreatePerson(
 			return ErrHaveNotSession
 		}
 		var req Request
-		if err := c.Bind(&req); err != nil {
+		if err := c.Bind(&req); err != nil || req.Person.IsEmpty() { //nothing to create if empty
 			return c.NoContent(http.StatusBadRequest)
 		}
 		err := creater.Execute(session, req.Person)
 		if err != nil {
 			return &echo.HTTPError{
 				Code:     http.StatusInternalServerError,
-				Message:  "cant execute",
+				Message:  err.Error(),
 				Internal: err,
 			}
 		}
@@ -121,7 +121,7 @@ func UpdatePerson(
 ) echo.HandlerFunc {
 	type (
 		Request struct {
-			Person app.Person `json:"persons"`
+			Person app.Person `json:"person"`
 		}
 	)
 	return func(c echo.Context) error {
@@ -139,7 +139,7 @@ func UpdatePerson(
 			return ErrHaveNotSession
 		}
 		var req Request
-		if err := c.Bind(&req); err != nil {
+		if err := c.Bind(&req); err != nil || req.Person.IsEmpty() { //nothing to update if empty
 			return c.NoContent(http.StatusBadRequest)
 		}
 		req.Person.Id = id
@@ -147,7 +147,7 @@ func UpdatePerson(
 		if err != nil {
 			return &echo.HTTPError{
 				Code:     http.StatusInternalServerError,
-				Message:  "cant execute",
+				Message:  err.Error(),
 				Internal: err,
 			}
 		}
@@ -175,7 +175,7 @@ func DeletePerson(
 		if err != nil {
 			return &echo.HTTPError{
 				Code:     http.StatusInternalServerError,
-				Message:  "cant execute",
+				Message:  err.Error(),
 				Internal: err,
 			}
 		}

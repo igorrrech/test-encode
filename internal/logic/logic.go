@@ -65,6 +65,7 @@ func (u UseCaseCreatePerson) Execute(session *dbr.Session, person app.Person) er
 		//err handle
 		return errors.Join(ErrTxCreation, err)
 	}
+	person.Print()
 	err = u.creater.CreatePerson(tx, person)
 	if err != nil {
 		//err handle

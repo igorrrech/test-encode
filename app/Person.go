@@ -2,6 +2,7 @@ package app
 
 import (
 	"errors"
+	"fmt"
 	"regexp"
 )
 
@@ -40,6 +41,17 @@ func validateName(name string) bool {
 	//try to detect sqlinj
 	sqlInj := regexp.MustCompile(`(\s*([\0\'\"\n\r\t\%\_\\]*\s*(((select\s*.+\s*from\s*.+)|(insert\s*.+\s*into\s*.+)|(update\s*.+\s*set\s*.+)|(delete\s*.+\s*from\s*.+)|(drop\s*.+)|(truncate\s*.+)|(alter\s*.+)|(exec\s*.+)|(\s*(all|any|not|and|between|in|like|or|some|contains|containsall|containskey)\s*.+[\=\>\<=\!\~]+.+)|(let\s+.+[\=]\s*.*)|(begin\s*.*\s*end)|(\s*[\/\*]+\s*.*\s*[\*\/]+)|(\s*(\-\-)\s*.*\s+)|(\s*(contains|containsall|containskey)\s+.*)))(\s*[\;]\s*)*)+)`)
 	return name == "" || !sqlInj.MatchString(name)
+}
+func (p Person) Print() {
+	fmt.Printf("person\n")
+	fmt.Println(p.Id)
+	fmt.Println(p.Email)
+	fmt.Println(p.Phone)
+	fmt.Println(p.FirstName)
+	fmt.Println(p.LastName)
+}
+func (p Person) IsEmpty() bool {
+	return p.Email == "" && p.Phone == "" && p.FirstName == "" && p.LastName == ""
 }
 
 var (
