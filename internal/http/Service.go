@@ -16,13 +16,14 @@ import (
 	h "test/internal/http/handlers"
 	m "test/internal/http/middleware"
 	"test/internal/logic"
+	"test/persondb"
 )
 
 type Service struct {
 	host string
 	port string
 	log  *logrus.Logger
-	pr   logic.PersonRepoInterface
+	pr   persondb.PersonRepoInterface
 	sp   m.SessionProvider
 }
 
@@ -30,7 +31,7 @@ func NewService(
 	host string,
 	port string,
 	log *logrus.Logger,
-	personRepo logic.PersonRepoInterface,
+	personRepo persondb.PersonRepoInterface,
 	sessionProvider m.SessionProvider,
 
 ) *Service {

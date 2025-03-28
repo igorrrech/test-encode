@@ -4,16 +4,17 @@ import (
 	"errors"
 	"regexp"
 	"test/app"
+	db "test/persondb"
 
 	"github.com/gocraft/dbr"
 )
 
 type UseCaseDeletePerson struct {
-	deleter PersonDeleter
+	deleter db.PersonDeleter
 }
 
 func NewUseCaseDeletePerson(
-	p PersonDeleter,
+	p db.PersonDeleter,
 ) *UseCaseDeletePerson {
 	return &UseCaseDeletePerson{
 		deleter: p,
@@ -41,11 +42,11 @@ func (u UseCaseDeletePerson) Execute(session *dbr.Session, id uint64) error {
 }
 
 type UseCaseCreatePerson struct {
-	creater PersonCreater
+	creater db.PersonCreater
 }
 
 func NewUseCaseCreatePerson(
-	p PersonCreater,
+	p db.PersonCreater,
 ) *UseCaseCreatePerson {
 	return &UseCaseCreatePerson{
 		creater: p,
@@ -79,11 +80,11 @@ func (u UseCaseCreatePerson) Execute(session *dbr.Session, person app.Person) er
 }
 
 type UseCaseUpdatePerson struct {
-	updater PersonUpdater
+	updater db.PersonUpdater
 }
 
 func NewUseCaseUpdatePerson(
-	p PersonUpdater,
+	p db.PersonUpdater,
 ) *UseCaseUpdatePerson {
 	return &UseCaseUpdatePerson{
 		updater: p,
@@ -116,11 +117,11 @@ func (u UseCaseUpdatePerson) Execute(session *dbr.Session, person app.Person) er
 }
 
 type UseCaseGetPersonById struct {
-	getter PersonGetter
+	getter db.PersonGetter
 }
 
 func NewUseCaseGetPersonById(
-	p PersonGetter,
+	p db.PersonGetter,
 ) *UseCaseGetPersonById {
 	return &UseCaseGetPersonById{
 		getter: p,
@@ -149,11 +150,11 @@ func (u UseCaseGetPersonById) Execute(session *dbr.Session, id uint64) (app.Pers
 }
 
 type UseCaseGetPersonsList struct {
-	listGetter PersonListGetter
+	listGetter db.PersonListGetter
 }
 
 func NewUseCaseGetPersonsList(
-	p PersonListGetter,
+	p db.PersonListGetter,
 ) *UseCaseGetPersonsList {
 	return &UseCaseGetPersonsList{
 		listGetter: p,
