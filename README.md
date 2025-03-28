@@ -1,4 +1,4 @@
-# enCode test task
+# enKod test task
 ## API
 Функции реализованного api:
 - **GET** ```/person/?limit=<uint>&offset=<uint>&search<string>``` - Данные всех лиц. 
